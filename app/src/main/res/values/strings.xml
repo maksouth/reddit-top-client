@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RedditSimpleClient</string>
+    <string name="error_load_posts">Cannot load posts</string>
+</resources>
