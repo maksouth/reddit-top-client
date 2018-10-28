@@ -3,8 +3,9 @@ package name.mharbovskyi.redditsimpleclient.domain.repository
 import io.reactivex.Single
 import name.mharbovskyi.redditsimpleclient.domain.model.Post
 
-interface SavePostsRepository {
+interface LocalRepository: LoadPaginatedPostsRepository  {
     fun save(posts: List<Post>)
+    fun clear()
 }
 
 interface LoadPaginatedPostsRepository {

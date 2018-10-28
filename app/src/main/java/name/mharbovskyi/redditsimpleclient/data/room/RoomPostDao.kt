@@ -12,6 +12,9 @@ interface RoomPostDao {
     @Query("SELECT * FROM RoomPost WHERE addedSec > :after ORDER BY addedSec LIMIT :count")
     fun getAfter(after: Long, count: Int): List<RoomPost>
 
+    @Query("DELETE FROM RoomPost")
+    fun clear()
+
     @Insert
     fun insertAll(posts: List<RoomPost>)
 }

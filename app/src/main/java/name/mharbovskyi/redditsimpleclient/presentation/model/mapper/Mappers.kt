@@ -13,7 +13,7 @@ internal fun Post.toViewPost(): ViewPost =
         ViewPost(
             id = id,
             title = title,
-            hasThumbnail = thumbnailUrl != null,
+            hasThumbnail = thumbnailUrl != null && thumbnailUrl.isNotBlank(),
             thumbnailUrl = thumbnailUrl,
             hasContentUrl = contentUrl.isImageFormat(),
             contentUrl = contentUrl,

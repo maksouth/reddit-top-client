@@ -3,6 +3,7 @@ package name.mharbovskyi.redditsimpleclient.presentation.view
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -50,6 +51,18 @@ class PostListFragment: DaggerFragment() {
             layoutManager = viewManager
             adapter = postsAdapter
         }
+
+        posts_list.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val visibleItemCount = viewManager.childCount
+                val itemCount = viewManager.itemCount
+                val firstVisibleItemPosition = viewManager.findFirstVisibleItemPosition()
+
+                viewModel.scrolled(visibleItemCount, firstVisibleItemPosition, itemCount)
+            }
+        })
 
         viewModel.start()
 

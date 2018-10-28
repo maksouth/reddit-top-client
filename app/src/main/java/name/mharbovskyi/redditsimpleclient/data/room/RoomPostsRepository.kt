@@ -4,21 +4,25 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import name.mharbovskyi.redditsimpleclient.domain.model.Post
-import name.mharbovskyi.redditsimpleclient.domain.repository.LoadPaginatedPostsRepository
-import name.mharbovskyi.redditsimpleclient.domain.repository.SavePostsRepository
+import name.mharbovskyi.redditsimpleclient.domain.repository.LocalRepository
 
-class RoomLoadPostsRepository(
+class RoomPostsRepository(
     private val postsDao: RoomPostDao
-) : LoadPaginatedPostsRepository, SavePostsRepository
-{
+) : LocalRepository {
+
     private var afterAddedSec: Long? = null
 
     override fun save(posts: List<Post>) {
-        Completable.fromCallable {
+        wrapCompletable {
             val roomPosts = posts.toRoomPostList()
             postsDao.insertAll(roomPosts)
-        }.subscribeOn(Schedulers.io())
-            .subscribe()
+        }
+    }
+
+    override fun clear() {
+        wrapCompletable {
+            postsDao.clear()
+        }
     }
 
     override fun loadNext(size: Int): Single<List<Post>> =
@@ -28,6 +32,14 @@ class RoomLoadPostsRepository(
                 postsDao.get(size)
             } else postsDao.getAfter(after, size)
         }
+            .doOnSuccess { if(it.isNotEmpty()) afterAddedSec = it.last().addedSec }
             .map { it.toPostList() }
             .subscribeOn(Schedulers.io())
+
+    private fun wrapCompletable(block: () -> Any) {
+        Completable.fromCallable(block)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
+
+    }
 }

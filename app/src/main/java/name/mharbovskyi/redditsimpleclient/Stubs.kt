@@ -7,7 +7,6 @@ import io.reactivex.Single
 import name.mharbovskyi.redditsimpleclient.domain.ConnectionChecker
 import name.mharbovskyi.redditsimpleclient.domain.model.Post
 import name.mharbovskyi.redditsimpleclient.domain.repository.LoadPaginatedPostsRepository
-import name.mharbovskyi.redditsimpleclient.domain.repository.SavePostsRepository
 import javax.inject.Inject
 
 class StubLocalDataSource: LoadPaginatedPostsRepository {
@@ -19,10 +18,6 @@ class StubLocalDataSource: LoadPaginatedPostsRepository {
 class StubConnectionChecker @Inject constructor(): ConnectionChecker {
     override fun isConnected(): Single<Boolean> =
             Single.just(false)
-}
-
-class StubSavePostsRepository @Inject constructor(): SavePostsRepository {
-    override fun save(posts: List<Post>) {}
 }
 
 @Module
