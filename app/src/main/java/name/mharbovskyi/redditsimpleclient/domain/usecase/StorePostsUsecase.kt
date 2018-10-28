@@ -5,6 +5,6 @@ import name.mharbovskyi.redditsimpleclient.domain.repository.SavePostsRepository
 
 class StorePostsUsecase(private val savePostsRepository: SavePostsRepository) {
     fun store(posts: List<Post>) {
-        TODO()
+        savePostsRepository.save(posts)
     }
 }

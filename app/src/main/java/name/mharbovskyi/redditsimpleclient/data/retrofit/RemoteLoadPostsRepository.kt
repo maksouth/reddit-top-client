@@ -1,10 +1,8 @@
-package name.mharbovskyi.redditsimpleclient.data.datasource.repository
+package name.mharbovskyi.redditsimpleclient.data.retrofit
 
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import name.mharbovskyi.redditsimpleclient.data.datasource.network.RedditService
-import name.mharbovskyi.redditsimpleclient.data.mapper.toPost
 import name.mharbovskyi.redditsimpleclient.domain.model.Post
 import name.mharbovskyi.redditsimpleclient.domain.repository.LoadPaginatedPostsRepository
 

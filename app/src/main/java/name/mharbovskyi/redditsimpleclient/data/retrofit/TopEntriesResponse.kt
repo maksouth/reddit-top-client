@@ -1,4 +1,4 @@
-package name.mharbovskyi.redditsimpleclient.data.model
+package name.mharbovskyi.redditsimpleclient.data.retrofit
 
 
 data class TopEntriesResponse(
@@ -56,7 +56,7 @@ data class Data(
     val url: String,
     val author_flair_text: Any,
     val title: String,
-    val created_utc: Int,
+    val created_utc: Long,
     val ups: Int,
     val num_comments: Int,
     val visited: Boolean,

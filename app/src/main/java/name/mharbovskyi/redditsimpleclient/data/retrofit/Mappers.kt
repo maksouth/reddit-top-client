@@ -1,8 +1,10 @@
-package name.mharbovskyi.redditsimpleclient.data.mapper
+package name.mharbovskyi.redditsimpleclient.data.retrofit
 
-import name.mharbovskyi.redditsimpleclient.data.model.Children
+import name.mharbovskyi.redditsimpleclient.data.toLocalDateTime
 import name.mharbovskyi.redditsimpleclient.domain.model.Post
-import java.time.LocalDateTime
+import java.time.*
+import java.time.ZoneId.systemDefault
+
 
 fun toPost(children: Children): Post {
     val data = children.data
@@ -21,7 +23,3 @@ fun toPost(children: Children): Post {
 fun checkThumbnail(thumbnail: String): String? =
         if (thumbnail.isBlank()) null
         else thumbnail
-
-fun Int.toLocalDateTime(): LocalDateTime {
-    TODO()
-}

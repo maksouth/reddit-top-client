@@ -21,8 +21,9 @@ class UsecaseModule {
         remoteRepository: LoadPaginatedPostsRepository,
         @Named(DataSourceModule.LOCAL)
         localRepository: LoadPaginatedPostsRepository,
-        connectionChecker: ConnectionChecker
-    ) = LoadPostsUsecase(remoteRepository, localRepository, connectionChecker)
+        connectionChecker: ConnectionChecker,
+        storePostsUsecase: StorePostsUsecase
+    ) = LoadPostsUsecase(remoteRepository, localRepository, connectionChecker, storePostsUsecase)
 
     @Provides
     fun provideStorePostsUsecase(

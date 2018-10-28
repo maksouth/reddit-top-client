@@ -9,13 +9,15 @@ const val PAGE_SIZE = 10
 
 class LoadPostsUsecase(private val remoteRepository: LoadPaginatedPostsRepository,
                        private val localRepository: LoadPaginatedPostsRepository,
-                       private val connectionChecker: ConnectionChecker) {
+                       private val connectionChecker: ConnectionChecker,
+                       private val storePostsUsecase: StorePostsUsecase) {
     fun loadMore(): Single<List<Post>> {
         return connectionChecker.isConnected()
                 .flatMap { isConnected ->
                     if (isConnected)
                         remoteRepository.loadNext(PAGE_SIZE)
-                                .onErrorResumeNext(localRepository.loadNext(PAGE_SIZE))
+                            .onErrorResumeNext(localRepository.loadNext(PAGE_SIZE))
+                            .doOnSuccess { storePostsUsecase.store(it) }
                     else localRepository.loadNext(PAGE_SIZE)
                 }
     }

@@ -18,7 +18,7 @@ class StubLocalDataSource: LoadPaginatedPostsRepository {
 
 class StubConnectionChecker @Inject constructor(): ConnectionChecker {
     override fun isConnected(): Single<Boolean> =
-            Single.just(true)
+            Single.just(false)
 }
 
 class StubSavePostsRepository @Inject constructor(): SavePostsRepository {
@@ -31,7 +31,7 @@ interface StubsModule {
         stubConnectionChecker: StubConnectionChecker
     ): ConnectionChecker
 
-    @Binds fun bindSavePostRepository(
-        stubSavePostsRepository: StubSavePostsRepository
-    ): SavePostsRepository
+//    @Binds fun bindSavePostRepository(
+//        stubSavePostsRepository: StubSavePostsRepository
+//    ): SavePostsRepository
 }

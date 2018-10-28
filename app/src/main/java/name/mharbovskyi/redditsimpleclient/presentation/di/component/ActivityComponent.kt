@@ -3,7 +3,7 @@ package name.mharbovskyi.redditsimpleclient.presentation.di.component
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
+import dagger.android.support.AndroidSupportInjectionModule
 import name.mharbovskyi.redditsimpleclient.StubsModule
 import name.mharbovskyi.redditsimpleclient.data.di.DataSourceModule
 import name.mharbovskyi.redditsimpleclient.domain.di.UsecaseModule
@@ -12,8 +12,9 @@ import name.mharbovskyi.redditsimpleclient.presentation.di.scope.ActivityScope
 import name.mharbovskyi.redditsimpleclient.presentation.view.MainActivity
 import javax.inject.Singleton
 
+@ActivityScope
 @Component(modules = [
-    AndroidInjectionModule::class,
+    AndroidSupportInjectionModule::class,
     UsecaseModule::class,
     DataSourceModule::class,
     FragmentsProviderModule::class,
