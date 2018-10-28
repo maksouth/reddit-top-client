@@ -5,9 +5,9 @@ data class ViewPost(
         val title: String,
         val createdBefore: String,
         val authorName: String,
-        val hasThumbnail: Boolean,
+        val showThumbnail: Boolean,
         val thumbnailUrl: String?,
-        val hasContentUrl: Boolean,
+        val showContent: Boolean,
         val contentUrl: String?,
         val commentsCount: String
 )

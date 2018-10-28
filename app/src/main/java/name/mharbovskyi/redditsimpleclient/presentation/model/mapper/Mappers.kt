@@ -13,9 +13,9 @@ internal fun Post.toViewPost(): ViewPost =
         ViewPost(
             id = id,
             title = title,
-            hasThumbnail = thumbnailUrl != null && thumbnailUrl.isNotBlank(),
+            showThumbnail = thumbnailUrl?.isImageFormat() ?: false,
             thumbnailUrl = thumbnailUrl,
-            hasContentUrl = contentUrl.isImageFormat(),
+            showContent = contentUrl.isImageFormat(),
             contentUrl = contentUrl,
             authorName = "by $author",
             commentsCount = "${shortStringNumber(commentsCount)} comments",

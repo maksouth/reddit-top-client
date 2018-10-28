@@ -1,7 +1,6 @@
 package name.mharbovskyi.redditsimpleclient.presentation.view.adapter
 
 import android.support.v7.widget.RecyclerView
-import android.transition.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,14 +42,14 @@ class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
     private var contentUrl: String? = null
 
     fun populate(post: ViewPost) {
-        if (!post.hasThumbnail)
+        if (!post.showThumbnail)
             thumbnailImage.visibility = View.GONE
         else
             Glide.with(thumbnailImage)
                 .load(post.thumbnailUrl)
                 .into(thumbnailImage)
 
-        if (post.hasContentUrl)
+        if (post.showContent)
             contentUrl = post.contentUrl
 
         authorLabel.text = post.authorName
