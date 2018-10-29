@@ -10,6 +10,7 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.ReplaySubject
 import name.mharbovskyi.redditsimpleclient.domain.usecase.ClearLocalPostsUsecase
 import name.mharbovskyi.redditsimpleclient.domain.usecase.LoadPostsUsecase
+import name.mharbovskyi.redditsimpleclient.presentation.model.ImageState
 import name.mharbovskyi.redditsimpleclient.presentation.model.ViewError
 import name.mharbovskyi.redditsimpleclient.presentation.model.ViewPost
 import name.mharbovskyi.redditsimpleclient.presentation.model.errorLoadPosts
@@ -49,7 +50,12 @@ class PostsViewModel (
         }
     }
 
+    fun thumbnailClick(imageUrl: String) {
+
+    }
+
     private fun loadMore() {
+
         if(!loadingInProgress.get()) {
             Log.d(TAG, "actually loading")
             loadingInProgress.set(true)

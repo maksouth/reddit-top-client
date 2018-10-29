@@ -1,6 +1,7 @@
 package name.mharbovskyi.redditsimpleclient.presentation.view
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -24,7 +25,14 @@ class PostListFragment: DaggerFragment() {
     lateinit var viewModelFactory: PostViewModelFactory
     private lateinit var viewModel: PostsViewModel
 
+    private var fullImageListener: ShowFullImageListener? = null
+
     private lateinit var postsAdapter: PostsAdapter
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        fullImageListener = activity as? ShowFullImageListener
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -52,6 +60,10 @@ class PostListFragment: DaggerFragment() {
             adapter = postsAdapter
         }
 
+        postsAdapter.thumbnailClicks.subscribe {
+            fullImageListener?.showImage(it)
+        }
+
         posts_list.addOnScrollListener(object: RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -76,9 +88,7 @@ class PostListFragment: DaggerFragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-    }
+
 
     companion object {
         val TAG = PostListFragment::class.java.simpleName

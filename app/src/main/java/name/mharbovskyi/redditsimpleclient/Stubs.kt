@@ -2,7 +2,6 @@ package name.mharbovskyi.redditsimpleclient
 
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import io.reactivex.Single
 import name.mharbovskyi.redditsimpleclient.domain.ConnectionChecker
 import name.mharbovskyi.redditsimpleclient.domain.model.Post

@@ -7,11 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import io.reactivex.subjects.PublishSubject
 import name.mharbovskyi.redditsimpleclient.R
+import name.mharbovskyi.redditsimpleclient.data.retrofit.checkThumbnail
 import name.mharbovskyi.redditsimpleclient.presentation.model.ViewPost
 
 class PostsAdapter: RecyclerView.Adapter<ViewHolder>() {
 
+    val thumbnailClicks: PublishSubject<String> = PublishSubject.create()
     private val posts = mutableListOf<ViewPost>()
 
     fun addPosts(newPosts: List<ViewPost>) {
@@ -29,17 +32,26 @@ class PostsAdapter: RecyclerView.Adapter<ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.populate(posts[position])
+
+        holder.thumbnailImage.setOnClickListener {
+            val contentUrl = holder.contentUrl
+            if (contentUrl != null)
+                thumbnailClicks.onNext(contentUrl)
+        }
     }
 }
 
 class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
+    var contentUrl: String? = null
+        private set
+    val thumbnailImage = view.findViewById<ImageView>(R.id.thumbnail)
+
     private val authorLabel = view.findViewById<TextView>(R.id.author_label)
     private val titleLabel = view.findViewById<TextView>(R.id.title_label)
     private val commentsLabel = view.findViewById<TextView>(R.id.comments_label)
     private val publishedLabel = view.findViewById<TextView>(R.id.published_label)
-    private val thumbnailImage = view.findViewById<ImageView>(R.id.thumbnail)
-    private var contentUrl: String? = null
+    private val hasFullImageLabel = view.findViewById<TextView>(R.id.has_full_image_label)
 
     fun populate(post: ViewPost) {
         if (!post.showThumbnail)
@@ -49,8 +61,12 @@ class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
                 .load(post.thumbnailUrl)
                 .into(thumbnailImage)
 
-        if (post.showContent)
+        if (post.showContent) {
             contentUrl = post.contentUrl
+            hasFullImageLabel.setText(R.string.has_full_image)
+        } else {
+            hasFullImageLabel.setText(R.string.not_has_full_image)
+        }
 
         authorLabel.text = post.authorName
         titleLabel.text = post.title
