@@ -1,6 +1,9 @@
-package name.mharbovskyi.redditsimpleclient.infrastructure
+package name.mharbovskyi.redditsimpleclient.device
 
 import android.net.ConnectivityManager
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
 import io.reactivex.Single
 import name.mharbovskyi.redditsimpleclient.domain.ConnectionChecker
 import javax.inject.Inject
@@ -18,4 +21,11 @@ constructor(private val connectivityManager: ConnectivityManager)
             isConnected
         }
     }
+}
+
+@Module
+interface DeviceModule {
+    @Binds fun bindsInternetConnectionChecker(
+        internetConnectionChecker: InternetConnectionChecker
+    ): ConnectionChecker
 }

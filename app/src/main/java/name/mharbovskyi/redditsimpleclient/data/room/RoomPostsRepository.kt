@@ -1,5 +1,6 @@
 package name.mharbovskyi.redditsimpleclient.data.room
 
+import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -14,6 +15,7 @@ class RoomPostsRepository(
 
     override fun save(posts: List<Post>) {
         wrapCompletable {
+            Log.d("RoomPostRepo", "saved ${posts.size} posts")
             val roomPosts = posts.toRoomPostList()
             postsDao.insertAll(roomPosts)
         }
@@ -21,7 +23,8 @@ class RoomPostsRepository(
 
     override fun clear() {
         wrapCompletable {
-            postsDao.clear()
+            val cleared = postsDao.clear()
+            Log.d("RoomPostRepo", "cleared $cleared posts")
         }
     }
 

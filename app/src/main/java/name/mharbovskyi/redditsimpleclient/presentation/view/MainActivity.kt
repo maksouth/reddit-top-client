@@ -8,11 +8,13 @@ import android.view.View
 import com.bumptech.glide.Glide
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
 import name.mharbovskyi.redditsimpleclient.R
 import name.mharbovskyi.redditsimpleclient.presentation.di.component.DaggerActivityComponent
-import name.mharbovskyi.redditsimpleclient.presentation.model.ImageVisibilityState
-import name.mharbovskyi.redditsimpleclient.presentation.presenter.MainViewModel
+import name.mharbovskyi.redditsimpleclient.presentation.model.Hide
+import name.mharbovskyi.redditsimpleclient.presentation.model.Show
+import name.mharbovskyi.redditsimpleclient.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
 class MainActivity
@@ -35,10 +37,11 @@ class MainActivity
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        viewModel.fullImageSubject.subscribe {
-            if (it.visibilityState == ImageVisibilityState.SHOW)
-                showFullScreenImage(it.contentUrl!!)
-            else hideFullScreenImage()
+        viewModel.fullImageSubject.subscribeBy {
+            when(it) {
+                is Show -> showFullScreenImage(it.contentUrl)
+                Hide -> hideFullScreenImage()
+            }
         }
 
         supportFragmentManager.beginTransaction()

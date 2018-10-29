@@ -28,7 +28,7 @@ fun shortStringNumber(number: Int): String = with(StringBuilder()) {
 fun LocalDateTime.beforeNowString(): String {
     val period = Period.between(this.toLocalDate(), LocalDate.now())
 
-    var string = ""
+    var string = "recently"
 
     if (period.years > 1) string = "${period.years} years ago"
     else if (period.years == 1) string =  "1 year ago"

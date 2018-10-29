@@ -9,7 +9,6 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import io.reactivex.subjects.PublishSubject
 import name.mharbovskyi.redditsimpleclient.R
-import name.mharbovskyi.redditsimpleclient.data.retrofit.checkThumbnail
 import name.mharbovskyi.redditsimpleclient.presentation.model.ViewPost
 
 class PostsAdapter: RecyclerView.Adapter<ViewHolder>() {
@@ -33,10 +32,10 @@ class PostsAdapter: RecyclerView.Adapter<ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.populate(posts[position])
 
-        holder.thumbnailImage.setOnClickListener {
-            val contentUrl = holder.contentUrl
-            if (contentUrl != null)
-                thumbnailClicks.onNext(contentUrl)
+        holder.thumbnailImage.setOnClickListener { _ ->
+            holder.contentUrl?.let {
+                thumbnailClicks.onNext(it)
+            }
         }
     }
 }
@@ -56,10 +55,12 @@ class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
     fun populate(post: ViewPost) {
         if (!post.showThumbnail)
             thumbnailImage.visibility = View.GONE
-        else
+        else {
+            thumbnailImage.visibility = View.VISIBLE
             Glide.with(thumbnailImage)
                 .load(post.thumbnailUrl)
                 .into(thumbnailImage)
+        }
 
         if (post.showContent) {
             contentUrl = post.contentUrl

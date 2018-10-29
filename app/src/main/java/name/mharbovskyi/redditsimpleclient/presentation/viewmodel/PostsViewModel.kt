@@ -1,31 +1,29 @@
-package name.mharbovskyi.redditsimpleclient.presentation.presenter
+package name.mharbovskyi.redditsimpleclient.presentation.viewmodel
 
 import android.arch.lifecycle.ViewModel
-import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.ReplaySubject
 import name.mharbovskyi.redditsimpleclient.domain.usecase.ClearLocalPostsUsecase
-import name.mharbovskyi.redditsimpleclient.domain.usecase.LoadPostsUsecase
-import name.mharbovskyi.redditsimpleclient.presentation.model.ImageState
-import name.mharbovskyi.redditsimpleclient.presentation.model.ViewError
-import name.mharbovskyi.redditsimpleclient.presentation.model.ViewPost
-import name.mharbovskyi.redditsimpleclient.presentation.model.errorLoadPosts
+import name.mharbovskyi.redditsimpleclient.domain.usecase.LoadedAll
+import name.mharbovskyi.redditsimpleclient.domain.usecase.NextPage
+import name.mharbovskyi.redditsimpleclient.domain.usecase.PaginationUsecase
+import name.mharbovskyi.redditsimpleclient.presentation.model.*
 import name.mharbovskyi.redditsimpleclient.presentation.model.mapper.toViewPostList
 import java.util.concurrent.atomic.AtomicBoolean
 
 class PostsViewModel (
-        private val loadPostsUsecase: LoadPostsUsecase,
-        private val clearLocalPostsUsecase: ClearLocalPostsUsecase
+    private val paginationUsecase: PaginationUsecase,
+    private val clearLocalPostsUsecase: ClearLocalPostsUsecase
 ): ViewModel() {
 
     private val TAG = PostsViewModel::class.java.simpleName
 
     lateinit var posts: ReplaySubject<List<ViewPost>>
     lateinit var errors: PublishSubject<ViewError>
+    lateinit var infos: PublishSubject<ViewInfo>
 
     private val disposables = CompositeDisposable()
     private var loadingInProgress = AtomicBoolean(false)
@@ -34,6 +32,7 @@ class PostsViewModel (
         if (!::posts.isInitialized) {
             posts = ReplaySubject.create()
             errors = PublishSubject.create()
+            infos = PublishSubject.create()
 
             val d = clearLocalPostsUsecase.execute()
             disposables.add(d)
@@ -43,32 +42,27 @@ class PostsViewModel (
     }
 
     fun scrolled(visibleItemCount: Int, firstVisibleItemPosition: Int, itemCount: Int) {
-        Log.d(TAG, "Scrolled first visible: $firstVisibleItemPosition, visible count: $visibleItemCount, total: $itemCount")
-        if (firstVisibleItemPosition + visibleItemCount > itemCount - postsThreshold) {
-            Log.d(TAG, "load more")
+        if (firstVisibleItemPosition + visibleItemCount == itemCount - postsThreshold) {
             loadMore()
         }
-    }
-
-    fun thumbnailClick(imageUrl: String) {
-
     }
 
     private fun loadMore() {
 
         if(!loadingInProgress.get()) {
-            Log.d(TAG, "actually loading")
             loadingInProgress.set(true)
-            val d = loadPostsUsecase.loadMore()
+
+            val d = paginationUsecase.loadMore()
                 .doFinally { loadingInProgress.set(false) }
                 .observeOn(AndroidSchedulers.mainThread())
-                .map { it.toViewPostList() }
                 .subscribeBy(
-                    onSuccess = { posts.onNext(it) },
-                    onError = {
-                        Log.d(TAG, "Error loading posts", it)
-                        errors.onNext(errorLoadPosts)
-                    }
+                    onSuccess = {
+                        when(it) {
+                            LoadedAll -> infos.onNext(infoLastPage)
+                            is NextPage -> it.posts.toViewPostList().let { posts.onNext(it) }
+                        }
+                    },
+                    onError = { errors.onNext(errorLoadPosts) }
                 )
             disposables.add(d)
         }

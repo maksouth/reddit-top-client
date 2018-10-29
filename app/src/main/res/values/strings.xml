@@ -3,4 +3,6 @@
     <string name="error_load_posts">Cannot load posts</string>
     <string name="has_full_image">has full image</string>
     <string name="not_has_full_image">no full image</string>
+    <string name="info_last_page">No more posts</string>
+    <string name="info_no_connection">No connection</string>
 </resources>

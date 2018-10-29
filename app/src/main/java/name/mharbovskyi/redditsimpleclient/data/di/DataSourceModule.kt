@@ -14,7 +14,6 @@ import javax.inject.Named
 class DataSourceModule {
 
     @Provides
-    @Named(REMOTE)
     fun provideRemoteLoadPostsRepository(service: RedditService)
             : LoadPaginatedPostsRepository =
         RemoteLoadPostsRepository(service)

@@ -13,7 +13,7 @@ interface RoomPostDao {
     fun getAfter(after: Long, count: Int): List<RoomPost>
 
     @Query("DELETE FROM RoomPost")
-    fun clear()
+    fun clear(): Int
 
     @Insert
     fun insertAll(posts: List<RoomPost>)

@@ -14,8 +14,8 @@ import dagger.android.support.DaggerFragment
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import name.mharbovskyi.redditsimpleclient.R
-import name.mharbovskyi.redditsimpleclient.presentation.presenter.PostsViewModel
-import name.mharbovskyi.redditsimpleclient.presentation.presenter.factory.PostViewModelFactory
+import name.mharbovskyi.redditsimpleclient.presentation.viewmodel.PostsViewModel
+import name.mharbovskyi.redditsimpleclient.presentation.viewmodel.factory.PostViewModelFactory
 import name.mharbovskyi.redditsimpleclient.presentation.view.adapter.PostsAdapter
 import javax.inject.Inject
 
@@ -60,35 +60,43 @@ class PostListFragment: DaggerFragment() {
             adapter = postsAdapter
         }
 
-        postsAdapter.thumbnailClicks.subscribe {
-            fullImageListener?.showImage(it)
-        }
+        viewModel.start()
+
+        setListeners()
+    }
+
+    private fun setListeners() {
 
         posts_list.addOnScrollListener(object: RecyclerView.OnScrollListener() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val visibleItemCount = viewManager.childCount
-                val itemCount = viewManager.itemCount
-                val firstVisibleItemPosition = viewManager.findFirstVisibleItemPosition()
-
-                viewModel.scrolled(visibleItemCount, firstVisibleItemPosition, itemCount)
+                (recyclerView.layoutManager as? LinearLayoutManager)?.let {
+                    viewModel.scrolled(it.childCount, it.findFirstVisibleItemPosition(), it.itemCount)
+                }
             }
         })
-
-        viewModel.start()
 
         viewModel.posts.subscribeBy {
             Log.d(TAG, "received ${it.size} posts")
             postsAdapter.addPosts(it)
         }
 
-        viewModel.errors.subscribeBy {
-            Toast.makeText(this.context, it.messageId, Toast.LENGTH_SHORT).show()
+        viewModel.errors.subscribeBy { viewError ->
+            context?.let {
+                Toast.makeText(this.context, viewError.messageId, Toast.LENGTH_LONG).show()
+            }
         }
+
+        viewModel.infos.subscribeBy { viewInfo ->
+            context?.let {
+                Toast.makeText(it, viewInfo.messageId, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        postsAdapter.thumbnailClicks.subscribeBy { fullImageListener?.showImage(it) }
+
     }
-
-
 
     companion object {
         val TAG = PostListFragment::class.java.simpleName

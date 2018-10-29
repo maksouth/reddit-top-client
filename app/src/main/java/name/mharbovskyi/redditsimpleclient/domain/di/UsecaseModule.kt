@@ -2,24 +2,40 @@ package name.mharbovskyi.redditsimpleclient.domain.di
 
 import dagger.Module
 import dagger.Provides
-import name.mharbovskyi.redditsimpleclient.data.di.DataSourceModule
 import name.mharbovskyi.redditsimpleclient.domain.ConnectionChecker
 import name.mharbovskyi.redditsimpleclient.domain.repository.LoadPaginatedPostsRepository
 import name.mharbovskyi.redditsimpleclient.domain.repository.LocalRepository
-import name.mharbovskyi.redditsimpleclient.domain.usecase.ClearLocalPostsUsecase
-import name.mharbovskyi.redditsimpleclient.domain.usecase.LoadPostsUsecase
+import name.mharbovskyi.redditsimpleclient.domain.usecase.*
 import javax.inject.Named
+
+const val CACHED = "cached"
+const val REMOTE = "remote"
 
 @Module
 class UsecaseModule {
 
+    @Named(REMOTE)
     @Provides
-    fun provideLoadPostsUsecase(
-        @Named(DataSourceModule.REMOTE)
+    fun provideRemoteLoadPostsUsecase(
         remoteRepository: LoadPaginatedPostsRepository,
-        localRepository: LocalRepository,
         connectionChecker: ConnectionChecker
-    ) = LoadPostsUsecase(remoteRepository, localRepository, connectionChecker)
+    ): LoadPostsUsecase =
+        RemoteLoadPostsUsecase(remoteRepository, connectionChecker)
+
+    @Named(CACHED)
+    @Provides
+    fun provideCachedLoadPostsUsecase(
+        localRepository: LocalRepository,
+        @Named(REMOTE)
+        loadPostsUsecase: LoadPostsUsecase
+    ): LoadPostsUsecase =
+        CachedLoadPostsUsecase(loadPostsUsecase, localRepository)
+
+    @Provides
+    fun providePaginationUsecase(
+        @Named(CACHED)
+        loadPostsUsecase: LoadPostsUsecase
+    ) = PaginationUsecase(loadPostsUsecase)
 
     @Provides
     fun provideClearPostsUsecase(
