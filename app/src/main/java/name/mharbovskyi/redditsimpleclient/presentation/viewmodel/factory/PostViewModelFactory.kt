@@ -2,6 +2,7 @@ package name.mharbovskyi.redditsimpleclient.presentation.viewmodel.factory
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import name.mharbovskyi.redditsimpleclient.domain.ConnectionChecker
 import name.mharbovskyi.redditsimpleclient.domain.usecase.ClearLocalPostsUsecase
 import name.mharbovskyi.redditsimpleclient.domain.usecase.PaginationUsecase
 import name.mharbovskyi.redditsimpleclient.presentation.viewmodel.PostsViewModel
@@ -9,11 +10,15 @@ import javax.inject.Inject
 
 class PostViewModelFactory @Inject constructor (
         private val paginationUsecase: PaginationUsecase,
-        private val clearLocalPostsUsecase: ClearLocalPostsUsecase
+        private val clearLocalPostsUsecase: ClearLocalPostsUsecase,
+        private val connectionChecker: ConnectionChecker
 ): ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-            PostsViewModel(paginationUsecase, clearLocalPostsUsecase) as T
-
+            PostsViewModel(
+                paginationUsecase,
+                clearLocalPostsUsecase,
+                connectionChecker
+            ) as T
 }

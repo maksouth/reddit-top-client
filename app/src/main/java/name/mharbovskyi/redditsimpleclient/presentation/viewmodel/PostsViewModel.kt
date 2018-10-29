@@ -6,6 +6,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.ReplaySubject
+import name.mharbovskyi.redditsimpleclient.domain.ConnectionChecker
 import name.mharbovskyi.redditsimpleclient.domain.usecase.ClearLocalPostsUsecase
 import name.mharbovskyi.redditsimpleclient.domain.usecase.LoadedAll
 import name.mharbovskyi.redditsimpleclient.domain.usecase.NextPage
@@ -16,7 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class PostsViewModel (
     private val paginationUsecase: PaginationUsecase,
-    private val clearLocalPostsUsecase: ClearLocalPostsUsecase
+    private val clearLocalPostsUsecase: ClearLocalPostsUsecase,
+    private val connectionChecker: ConnectionChecker
 ): ViewModel() {
 
     private val TAG = PostsViewModel::class.java.simpleName
@@ -24,6 +26,7 @@ class PostsViewModel (
     lateinit var posts: ReplaySubject<List<ViewPost>>
     lateinit var errors: PublishSubject<ViewError>
     lateinit var infos: PublishSubject<ViewInfo>
+    lateinit var showImageData: PublishSubject<String>
 
     private val disposables = CompositeDisposable()
     private var loadingInProgress = AtomicBoolean(false)
@@ -33,11 +36,16 @@ class PostsViewModel (
             posts = ReplaySubject.create()
             errors = PublishSubject.create()
             infos = PublishSubject.create()
+            showImageData = PublishSubject.create()
 
             val d = clearLocalPostsUsecase.execute()
             disposables.add(d)
 
             loadMore()
+
+            connectionChecker.isConnected()
+                .filter{ !it }
+                .subscribeBy { infos.onNext(infoNoConnection) }
         }
     }
 
@@ -45,6 +53,15 @@ class PostsViewModel (
         if (firstVisibleItemPosition + visibleItemCount == itemCount - postsThreshold) {
             loadMore()
         }
+    }
+
+    fun thumbnailClick(contentUrl: String) {
+        connectionChecker.isConnected()
+            .subscribeBy {
+                if (it)
+                    showImageData.onNext(contentUrl)
+                else infos.onNext(infoNoConnection)
+            }
     }
 
     private fun loadMore() {

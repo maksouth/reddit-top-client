@@ -94,9 +94,15 @@ class PostListFragment: DaggerFragment() {
             }
         }
 
-        postsAdapter.thumbnailClicks.subscribeBy { fullImageListener?.showImage(it) }
+        viewModel.showImageData.subscribeBy { showFullImage(it) }
+
+        postsAdapter.thumbnailClicks.subscribeBy { viewModel.thumbnailClick(it) }
 
     }
+
+    private fun showFullImage(contentUrl: String) =
+        fullImageListener?.showImage(contentUrl)
+
 
     companion object {
         val TAG = PostListFragment::class.java.simpleName
