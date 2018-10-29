@@ -4,7 +4,6 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule
-import name.mharbovskyi.redditsimpleclient.StubsModule
 import name.mharbovskyi.redditsimpleclient.data.di.DataSourceModule
 import name.mharbovskyi.redditsimpleclient.device.DeviceModule
 import name.mharbovskyi.redditsimpleclient.domain.di.UsecaseModule
@@ -12,7 +11,6 @@ import name.mharbovskyi.redditsimpleclient.presentation.di.module.AndroidModule
 import name.mharbovskyi.redditsimpleclient.presentation.di.module.FragmentsProviderModule
 import name.mharbovskyi.redditsimpleclient.presentation.di.scope.ActivityScope
 import name.mharbovskyi.redditsimpleclient.presentation.view.MainActivity
-import javax.inject.Singleton
 
 @ActivityScope
 @Component(modules = [

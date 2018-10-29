@@ -15,6 +15,11 @@ data class ViewPost(
     val commentsCount: String
 )
 
+sealed class ImageState
+
+class Show(val contentUrl: String): ImageState()
+object Hide: ImageState()
+
 data class ViewInfo(@StringRes val messageId: Int)
 data class ViewError(@StringRes val messageId: Int)
 

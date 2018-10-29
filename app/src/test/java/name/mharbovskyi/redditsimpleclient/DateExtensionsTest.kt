@@ -5,7 +5,7 @@ import name.mharbovskyi.redditsimpleclient.data.toSeconds
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class ExtensionsTest {
+class DateExtensionsTest {
     @Test fun testUtcLongConvertsToLocalTime() {
         val time = 1540732270L
         val localDateTime = time.toLocalDateTime()
