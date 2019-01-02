@@ -11,6 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import dagger.android.support.DaggerFragment
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_post_list.*
 import name.mharbovskyi.redditsimpleclient.R
@@ -28,6 +31,8 @@ class PostListFragment: DaggerFragment() {
     private var fullImageListener: ShowFullImageListener? = null
 
     private lateinit var postsAdapter: PostsAdapter
+
+    val compositeDisposable = CompositeDisposable()
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -77,27 +82,32 @@ class PostListFragment: DaggerFragment() {
             }
         })
 
-        viewModel.posts.subscribeBy {
+        viewModel.posts.subscribe {
             Log.d(TAG, "received ${it.size} posts")
             postsAdapter.addPosts(it)
-        }
+        }.addTo(compositeDisposable)
 
-        viewModel.errors.subscribeBy { viewError ->
+        viewModel.errors.subscribe { viewError ->
             context?.let {
                 Toast.makeText(this.context, viewError.messageId, Toast.LENGTH_LONG).show()
             }
-        }
+        }.addTo(compositeDisposable)
 
-        viewModel.infos.subscribeBy { viewInfo ->
+        viewModel.infos.subscribe { viewInfo ->
             context?.let {
                 Toast.makeText(it, viewInfo.messageId, Toast.LENGTH_SHORT).show()
             }
-        }
+        }.addTo(compositeDisposable)
 
-        viewModel.showImageData.subscribeBy { showFullImage(it) }
+        viewModel.showImageData.subscribe { showFullImage(it) }.addTo(compositeDisposable)
 
-        postsAdapter.thumbnailClicks.subscribeBy { viewModel.thumbnailClick(it) }
+        postsAdapter.thumbnailClicks.subscribe { viewModel.thumbnailClick(it) }.addTo(compositeDisposable)
 
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        compositeDisposable.clear()
     }
 
     private fun showFullImage(contentUrl: String) =

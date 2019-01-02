@@ -8,7 +8,6 @@ import name.mharbovskyi.redditsimpleclient.data.room.RoomPostDao
 import name.mharbovskyi.redditsimpleclient.data.room.RoomPostsRepository
 import name.mharbovskyi.redditsimpleclient.domain.repository.LoadPaginatedPostsRepository
 import name.mharbovskyi.redditsimpleclient.domain.repository.LocalRepository
-import javax.inject.Named
 
 @Module(includes = [NetworkModule::class, RoomModule::class])
 class DataSourceModule {

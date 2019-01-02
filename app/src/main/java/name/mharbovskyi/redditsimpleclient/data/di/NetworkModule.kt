@@ -22,13 +22,13 @@ class NetworkModule {
     @Provides
     internal fun provideRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(client)
-                .baseUrl(RedditService.BASE_URL)
-                .build()
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .client(client)
+            .baseUrl(RedditService.BASE_URL)
+            .build()
 
     @Provides
     internal fun provideRedditService(retrofit: Retrofit) =
-            retrofit.create(RedditService::class.java)
+        retrofit.create(RedditService::class.java)
 }

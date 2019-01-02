@@ -8,6 +8,8 @@ import android.view.View
 import com.bumptech.glide.Glide
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
 import name.mharbovskyi.redditsimpleclient.R
@@ -25,6 +27,8 @@ class MainActivity
 
     lateinit var viewModel: MainViewModel
 
+    private val compositeDisposable = CompositeDisposable()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         DaggerActivityComponent
             .builder()
@@ -37,16 +41,21 @@ class MainActivity
 
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
-        viewModel.fullImageSubject.subscribeBy {
+        viewModel.fullImageSubject.subscribe {
             when(it) {
                 is Show -> showFullScreenImage(it.contentUrl)
                 Hide -> hideFullScreenImage()
             }
-        }
+        }.addTo(compositeDisposable)
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, PostListFragment())
             .commit()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
     override fun showImage(contentUrl: String) {
